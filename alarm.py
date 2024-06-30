@@ -60,6 +60,8 @@ if __name__ == "__main__":
 
 
     while True:
+        #主线程先睡眠，保证能拿到新的传感器值
+        time.sleep(MAIN_SLEEP)
         #print(f"program_exit is {program_exit}")
         #print(f" flame_detected {temp.flame_detected}, person {person}, flag {weixin.weixinFlag}")
         #print(f" flame_detected {flame_detected}, person {person}, flag {weixinFlag}")
@@ -73,15 +75,15 @@ if __name__ == "__main__":
                 #print("暂时无法报警，因为已经报警过一次了，需要等待30秒之后再报警")
                 pass
         elif(temp.flame_detected == True and pir.person == True):
-            #print("这时候不需要报警因为人在旁边正在做饭")
+            print("这时候不需要报警因为人在旁边正在做饭")
             pass
         elif(temp.flame_detected == False and pir.person == True):
             #print("这时候不需要报警可能只是人从旁边走过")
-            log.logger.info("有人经过")
+            #log.logger.info("有人在")
             pass
         elif(temp.flame_detected == False and pir.person == False):
             #print("无任何情况不需要报警")
             pass
-        time.sleep(MAIN_SLEEP)
+        #time.sleep(MAIN_SLEEP)
 
         
