@@ -10,6 +10,8 @@ flame_detected = False
 TEMPSLEEP = 30 #秒
 #COOK_TIME秒一直检测到火焰就认为在做饭了
 COOK_TIME = 60 #秒
+templist = [0, 0, 0, 0, 0]
+
 
 def tempTask():
     global flame_detected
@@ -17,8 +19,7 @@ def tempTask():
     start_time = 0
     end_time = 0
     log.logger.info("---enter tempTask---\n")
-    #temp1 = temp2 = temp3=0
-    templist = [0, 0, 0, 0, 0]
+    global templist
     mlx90640 = cdll.LoadLibrary('./libmlx90640.so')
     # 
     # mlx90640 will output 32*24 temperature array with chess mode
@@ -46,10 +47,12 @@ def tempTask():
         #      ", 30-100 is " + str(temp30_100) + ", over 100 is ", str(temp100) + ".\n")
         print(templist)
 
-        if(templist[3] >= 1 or templist[4] >= 1):
+        if(templist[1] >= 1 ):
+        #if(templist[1] >= 1 ):
             #global flame_detected
             flame_detected = True
             print("flame detected")
+            log.logger.info(templist)
             #if(False == start_cook):
             #    startCook = True
             #    start_time = time.perf_counter()

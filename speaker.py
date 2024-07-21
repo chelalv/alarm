@@ -2,6 +2,7 @@
 
 import log
 import time
+import os
 
 #define
 #当发送weixinCnt次微信报警就需要声光报警
@@ -10,7 +11,9 @@ SPEAKER_SLEEP = 5
 cnt = 0
 
 def playmusic():
-    pass
+    os.system("mplayer alarm.m4a &")
+
+    
 #出现两次
 def speakerTask():
     global cnt
@@ -21,4 +24,5 @@ def speakerTask():
             cnt = 0
             playmusic()
         time.sleep(SPEAKER_SLEEP)
-    
+
+#playmusic()

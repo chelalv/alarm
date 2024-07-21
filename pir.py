@@ -14,52 +14,15 @@ startTime = 0
 PIR_SLEEP = 5  #秒
 
 #只要PIR_TIME秒之内检测到有人就认为有人，1分钟之内都没有检测到动作，就认为没有人
-PIR_TIME = 60
-
-"""
-PIR方案
-def someone_near():
-    global person
-    global startTime
-    person = True
-    print("someone near")
-    #只要检测到有人，就重新计时
-    startTime = time.perf_counter()
-
-def someone_left():
-    global person
-    #person = False
-    #print("someone left")
-    pass
+PIR_TIME = 60 * 2
 
 
-def pirTask():
-    log.logger.info("---enter pirTask---\n")
-    #使用的是11脚GPIO0
-    pir = DigitalInputDevice(pin = 17)
-    pir.when_activated = someone_near
-    pir.when_deactivated = someone_left
-
-    global person
-    global startTime
-    while True:
-        if(True == person):
-            endTime = time.perf_counter()
-            runTime = endTime - startTime
-            if(runTime > PIR_TIME):
-                person = False
-                startTime = endTime = runTime = 0
-                print(f"已经{PIR_TIME}秒没有动静")
-        time.sleep(PIR_SLEEP)
-        #person = False
-    #pause()
-
-"""
 #24G 雷达方案
 def someone_near():
     global person
-    #global startTime
+    global person_internal
     person = True
+    person_internal = True
     print("someone near")
     #只要检测到有人，就重新计时
     #startTime = time.perf_counter()
@@ -97,4 +60,3 @@ def pirTask():
         time.sleep(PIR_SLEEP)
         #person = False
     #pause()
-

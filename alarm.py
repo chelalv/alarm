@@ -23,9 +23,14 @@ program_exit = False
 MAIN_SLEEP = 3
 
 def keyboardTask():
+    log.logger.info("---enter keyboardTask---")
     global program_exit
     while True:
-        key = input("press q to exit\n")
+        try:
+            key = input("press q to exit\n")
+        except EOFError:
+            print("program run in background, exit keyboard task")
+            exit()
         if(key == 'q' or key == 'Q'):
             print("program exit")
             program_exit = True
@@ -75,7 +80,7 @@ if __name__ == "__main__":
                 #print("暂时无法报警，因为已经报警过一次了，需要等待30秒之后再报警")
                 pass
         elif(temp.flame_detected == True and pir.person == True):
-            print("这时候不需要报警因为人在旁边正在做饭")
+            #print("这时候不需要报警因为人在旁边正在做饭")
             pass
         elif(temp.flame_detected == False and pir.person == True):
             #print("这时候不需要报警可能只是人从旁边走过")

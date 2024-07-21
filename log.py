@@ -10,7 +10,7 @@ LEVEL = logging.INFO
 #LEVEL = logging.ERROR
 #LEVEL = logging.CRITICAL
 
-logging.basicConfig(filename=datetime.now().strftime('%Y-%m-%d-%I-%M-%S.log'),\
+logging.basicConfig(filename=datetime.now().strftime('%Y-%m-%d-%H-%M-%S.log'),\
                     level = LEVEL,\
         format = '%(asctime)s %(filename)s %(funcName)s line%(lineno)s %(levelname)s - %(message)s')
 logger = logging.getLogger()

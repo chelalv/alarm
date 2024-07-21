@@ -2,6 +2,7 @@
 import time
 import requests
 import log, speaker
+from gpiozero import CPUTemperature
 
 weixinFlag = False
 sentFlag = False
@@ -15,6 +16,8 @@ title= '报警' #改成你要的标题内容
 sendTimer = 60
 #发送报警信息每WEIXIN_SLEEP秒就需要查看要不要发微信报警
 WEIXIN_SLEEP = 2
+
+HEARTBEATTIME = 60 * 60 
 
 
 def sendMsg():
@@ -35,6 +38,8 @@ def sendMsg():
 def weixinTask():
     global weixinFlag, start_time, sentFlag, sendTimer
     log.logger.info("---enter weixinTask---\n")
+    heartbeet = False
+    cpu = CPUTemperature()
     while True:
         #print("weixinTask")
         #print(f"weixinFlag in weixinTask {weixinFlag}, sentFlag {sentFlag}")
@@ -47,4 +52,12 @@ def weixinTask():
             log.logger.info("报警已经过去{}秒".format(sendTimer) + "准备下一次报警")
             sentFlag = False
             weixinFlag = False
+        if(False == heartbeet):
+            heartbeetStart = time.perf_counter()
+            heartbeet = True
+        heartbeetStop = time.perf_counter()
+        if(heartbeetStop - heartbeetStart > HEARTBEATTIME):
+            temp = cpu.temperature
+            log.logger.info(f"heartbeat {temp}")
+            heartbeet = False
         time.sleep(WEIXIN_SLEEP)
