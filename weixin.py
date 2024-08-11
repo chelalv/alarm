@@ -58,6 +58,6 @@ def weixinTask():
         heartbeetStop = time.perf_counter()
         if(heartbeetStop - heartbeetStart > HEARTBEATTIME):
             temp = cpu.temperature
-            log.logger.info(f"heartbeat {temp}")
+            log.logger.info(f"heartbeat and temperature is {temp}")
             heartbeet = False
         time.sleep(WEIXIN_SLEEP)

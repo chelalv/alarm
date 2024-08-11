@@ -1,0 +1,122 @@
+使用的是11脚GPIO0作为PIR口
+5V风扇：VCC    PIN4
+        GND    PIN6
+      
+雷达：  VCC3.3 PIN1
+        GND    PIN9
+        OT2    PIN11
+
+        
+热成像：VCC 5v PIN2
+        GND    PIN14
+        SDA    PIN3
+        SCL    PIN5
+'''       
+热成像2 VCC3.3 PIN17
+        GND    PIN20
+        SDA    PIN27
+        SCL    PIN28
+PIR     VCC5v  PIN
+        GND    PIN9
+        OUT    PIN11
+'''
+        
+
+
+本地也要有log，和微信收到记录做比对，
+防止微信消息没有发送成功
+
+token：a1c54e811f1e4ce1b187921fc69cc388
+
+点击微信界面上面的控制台，然后把默认的关闭提示音取消就行啦。
+
+火焰传感器可以检测到打火机，蜡烛火焰，但是检测不到燃气火焰
+热成像可以检测到高温，但是有可能煤气关了，锅很热，有可能会误报
+PIR传感器需要人走动才会检测到，如果不动，也不会检测到
+1分钟之内检测到有人动，就算有人，1分钟没有人接近，就算没有人
+
+这个PIR传感器每隔1分钟左右自己会跳到一次，买另外厂家的再测试
+新买的PIR也有类似的问题，莫名其妙也会报有人
+
+使用24G毫米波雷达可以检测有人没人，但是需要在启动的时候就读一下
+GPIO值，要不然如果已经有人在，就不会产生中断来提示有人
+在使用软件生成阈值的时候，不能动作太大，要不然很容易产生检测不人，
+也不能一动不动，这样就很容易检测到人
+
+热成像检测两个燃气灶的数据不一样，一个离得远，一个离的近，所以不能同时检测
+
+再买一个热成像，不过i2c线会比较长，可能有2m
+
+两个热成像I2C地址是一样的:
+https://woodgears.ca/tech/i2c.html 增加一路i2c，但是我还没有加上拉电阻
+
+
+
+使用小米插座，设置早上打开电源，晚上关闭电源
+
+设置树莓派开机启动程序 systemd
+https://forums.raspberrypi.com/viewtopic.php?p=921354#p921354
+sudo vim /etc/systemd/system/alarm.service
+[Service]
+WorkingDirectory=/home/matt/projects/alarm/code
+ExecStart=python ./alarm.py
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=alarm
+User=matt
+Group=matt
+Environment=NODE_ENV=production
+[Install]
+WantedBy=multi-user.target
+sudo systemctl enable  alarm
+
+/etc/crontab 设置自动关机，每天晚上关机
+00 20   * * *   root    shutdown -h now
+
+上电开机没有创建log文件，reboot可以创建log文件
+在service uint文件里，要写python ./alarm.py，而不是 python alarm.py.
+不是这个原因，其实log有，是记录到上一天的log里了
+我测试了
+sudo crontab -e
+In crontab add this line
+@reboot /sbin/shutdown -h 20:00
+ctrl+X to save and install the crontab.
+这个办法也还是一样的问题
+树莓派4上没有这个问题，感觉是poweroff之后，又启动了一次
+
+增加每小时心跳一次+CPU温度记录在log里
+
+原子变量 pip install atomic，但是没有boolean类型
+
+检测到高温的时候，增加温度打印
+CPU：cat /sys/class/thermal/thermal_zone0/temp
+GPU：vcgencmd measure_temp
+
+ EOFError: EOF when reading a line 这是使用input的时候，但是程序又是后台运行的时候会出现
+ 使用try/except解决
+
+
+设置ssh自动登录rpi：
+https://www.tinkerboy.xyz/how-to-setup-putty-to-automatically-login-to-your-raspberry-pi/
+
+设置固定IP，公网ssh
+
+syslog
+
+增加喇叭播放报警
+
+有时候会莫名其妙连续检测到高温，其实这时候已经没有高温了
+2024-07-28 18:50:26,144 temp.py tempTask line55 INFO - [766, 2, 0, 0, 0]
+2024-07-28 18:50:56,295 temp.py tempTask line55 INFO - [766, 2, 0, 0, 0]
+2024-07-28 18:51:10,076 weixin.py weixinTask line52 INFO - 报警已经过去60秒准备下一次报警
+2024-07-28 18:51:14,082 weixin.py weixinTask line47 INFO - 发送报警信息到微信
+2024-07-28 18:51:15,577 speaker.py speakerTask line23 CRITICAL - 发出声光报警
+2024-07-28 18:51:26,445 temp.py tempTask line55 INFO - [766, 2, 0, 0, 0]
+2024-07-28 18:51:56,558 temp.py tempTask line55 INFO - [766, 2, 0, 0, 0]
+2024-07-28 18:52:14,254 weixin.py weixinTask line52 INFO - 报警已经过去60秒准备下一次报警
+2024-07-28 18:52:16,258 weixin.py weixinTask line47 INFO - 发送报警信息到微信
+2024-07-28 18:52:26,709 temp.py tempTask line55 INFO - [766, 2, 0, 0, 0]
+
+
+
