@@ -21,13 +21,13 @@ def tempTask():
     log.logger.info("---enter tempTask---\n")
     global templist
     mlx90640 = cdll.LoadLibrary('./libmlx90640.so')
+    temp=(c_float*768)()
+    ptemp=pointer(temp)
     # 
     # mlx90640 will output 32*24 temperature array with chess mode
     #
     while True:
         #print(f" flame_detected in tempTask {flame_detected}")
-        temp=(c_float*768)()
-        ptemp=pointer(temp)
         mlx90640.get_mlx90640_temp(ptemp)
         for i in range(len(temp)):
             #if(i%16 == 0 and i!=0):

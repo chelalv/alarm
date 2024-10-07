@@ -8,7 +8,7 @@
 
         
 热成像：VCC 5v PIN2
-        GND    PIN14
+        GND    PIN14/PIN6
         SDA    PIN3
         SCL    PIN5
 '''       
@@ -21,6 +21,7 @@ PIR     VCC5v  PIN
         OUT    PIN11
 '''
         
+热成像传感器型号是 D55 https://www.waveshare.net/wiki/MLX90640-D55_Thermal_Camera#Raspberry_Pi_4B
 
 
 本地也要有log，和微信收到记录做比对，
@@ -119,4 +120,16 @@ syslog
 2024-07-28 18:52:26,709 temp.py tempTask line55 INFO - [766, 2, 0, 0, 0]
 
 
-
+RPI4部署：
+1. 播放m4a 
+    sudo apt install mplayer 
+2. 解决热传感器 cnt > 4 error 
+sudo vim /boot/firmware/config.txt
+dtparam=i2c_arm=on,i2c_arm_baudrate=400000
+3. lgpio.error: 'GPIO busy'
+#RPI4使用13脚GPIO 27
+pir = DigitalInputDevice(pin = 27)
+4. sudo crontab -e
+In crontab add this line
+@reboot /sbin/shutdown -h 20:00
+5. sudo vim /etc/systemd/system/alarm.service

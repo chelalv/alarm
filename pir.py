@@ -40,7 +40,9 @@ def someone_left():
 def pirTask():
     log.logger.info("---enter pirTask---\n")
     #使用的是11脚GPIO0
-    pir = DigitalInputDevice(pin = 17)
+    #pir = DigitalInputDevice(pin = 17)
+    #RPI4使用13脚GPIO 27
+    pir = DigitalInputDevice(pin = 27)
     pir.when_activated = someone_near
     pir.when_deactivated = someone_left
 

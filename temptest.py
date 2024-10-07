@@ -1,9 +1,6 @@
-
 # encoding:utf-8
 from ctypes import *
 import time
-
-
 
 #while True:
 #    global flame_detected
