@@ -4,11 +4,11 @@
       
 雷达：  VCC3.3 PIN1
         GND    PIN9
-        OT2    PIN11
+        OT2    PIN13
 
         
-热成像：VCC 5v PIN2
-        GND    PIN14/PIN6
+热成像：VCC 5v  PIN4/PIN2
+        GND    PIN6/PIN14
         SDA    PIN3
         SCL    PIN5
 '''       
@@ -133,3 +133,9 @@ pir = DigitalInputDevice(pin = 27)
 In crontab add this line
 @reboot /sbin/shutdown -h 20:00
 5. sudo vim /etc/systemd/system/alarm.service
+6. mplayer没有声音
+https://askubuntu.com/questions/1379890/how-to-play-a-sound-from-a-systemd-service-on-ubuntu
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse/"
+7. I2C Read Error!
+I2C的线不能太长，换成20cm

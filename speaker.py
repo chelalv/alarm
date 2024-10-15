@@ -24,5 +24,7 @@ def speakerTask():
             cnt = 0
             playmusic()
         time.sleep(SPEAKER_SLEEP)
+        # 测试报警声能否正常播出
+        #cnt = cnt + 1 
 
 #playmusic()

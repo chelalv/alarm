@@ -1,6 +1,7 @@
 # encoding:utf-8
 import time
 import log
+import speaker
 from gpiozero import DigitalInputDevice
 from signal import pause
 from datetime import datetime
@@ -23,7 +24,8 @@ def someone_near():
     global person_internal
     person = True
     person_internal = True
-    print("someone near")
+    print("someone near {speaker.cnt}")
+    speaker.cnt = 0
     #只要检测到有人，就重新计时
     #startTime = time.perf_counter()
 
