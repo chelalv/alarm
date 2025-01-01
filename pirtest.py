@@ -14,7 +14,7 @@ startTime = 0
 #人检测PIR_SLEEP秒一次
 PIR_SLEEP = 5  #秒
 
-#只要PIR_TIME秒之内检测到有人就认为有人，1分钟之内都没有检测到动作，就认为没有人
+#只要PIR_TIME秒之内检测到有人就认为有人，PIR_SLEEP*PIR_TIME之内没有检测到动作，就认为没有人
 PIR_TIME = 15
 
 def someone_near():
@@ -22,6 +22,7 @@ def someone_near():
     global person_internal
     person = True
     person_internal = True
+    startTime = 0
     print("someone near")
 
 
@@ -44,11 +45,14 @@ pir.when_deactivated = someone_left
 print(pir.value)
 if(pir.value == 1):
     person = True
-
+else:
+    startTime = time.perf_counter()
+    #print(startTime)
 
 while True:
     if(False == person_internal and startTime != 0):
         endTime = time.perf_counter()
+        #print(endTime)
         runTime = endTime - startTime
         print(runTime)
         if(runTime > PIR_TIME):

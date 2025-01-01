@@ -21,7 +21,9 @@ PIR     VCC5v  PIN
         OUT    PIN11
 '''
         
-热成像传感器型号是 D55 https://www.waveshare.net/wiki/MLX90640-D55_Thermal_Camera#Raspberry_Pi_4B
+热成像传感器型号是 MLX90640 D55 MLX90640红外热像仪模块 32×24像素 110度视场角 I2C接口
+https://www.waveshare.net/wiki/MLX90640-D55_Thermal_Camera#Raspberry_Pi_4B
+不是MLX90641红外热像仪模块 16×12像素
 
 
 本地也要有log，和微信收到记录做比对，
@@ -139,3 +141,5 @@ Environment="XDG_RUNTIME_DIR=/run/user/1000"
 Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse/"
 7. I2C Read Error!
 I2C的线不能太长，换成20cm
+8. journalctl -u alarm.service -f 查看log，这里printf和log都会记录
+9. sudo i2cdetect -y 1 会出现所有的地址

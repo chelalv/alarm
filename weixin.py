@@ -22,7 +22,7 @@ HEARTBEATTIME = 60 * 60
 
 def sendMsg():
     global sentFlag, start_time
-    content = time.ctime() + ' 检测到高温并且人不在旁边'
+    content = time.ctime() + ' 检测到高温并且人不在旁边 cnt ' + f"{speaker.cnt}"
     url = 'http://www.pushplus.plus/send?token='+token+'&title='+title+'&content='+content
     response = requests.get(url)
     #print(response.text)
@@ -37,7 +37,7 @@ def sendMsg():
 
 def weixinTask():
     global weixinFlag, start_time, sentFlag, sendTimer
-    log.logger.info("---enter weixinTask---\n")
+    log.logger.info("---enter weixinTask---")
     heartbeet = False
     cpu = CPUTemperature()
     while True:
@@ -58,6 +58,6 @@ def weixinTask():
         heartbeetStop = time.perf_counter()
         if(heartbeetStop - heartbeetStart > HEARTBEATTIME):
             temp = cpu.temperature
-            log.logger.info(f"heartbeat and temperature is {temp}")
+            log.logger.info(f"heartbeat and PC temperature is {temp}")
             heartbeet = False
         time.sleep(WEIXIN_SLEEP)
