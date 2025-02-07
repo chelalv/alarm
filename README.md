@@ -7,7 +7,7 @@ dtoverlay=uart4
         OT2    PIN13(GPIO27)
 
 热成像：VCC3.3v  PIN1
-        GND    PIN30
+        GND    PIN6
         TX    PIN24
         RX    PIN21
 4. 插座上电，有时候树莓派启动后又关机

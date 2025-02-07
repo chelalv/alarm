@@ -8,7 +8,7 @@ weixinFlag = False
 sentFlag = False
 start_time = 0
 
-token = 'a1c54e811f1e4ce1b187921fc69cc388' #在pushplus网站中可以找到
+token = 'abcd' #在pushplus网站中可以找到
 title= '报警' #改成你要的标题内容
 
 #define
