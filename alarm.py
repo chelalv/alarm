@@ -12,6 +12,7 @@ from temp import tempTask
 from pir import pirTask
 from weixin import weixinTask
 from speaker import speakerTask
+from oled1306 import oledTask
 
 import temp, pir, weixin,log
 
@@ -50,18 +51,21 @@ if __name__ == "__main__":
     t3 = threading.Thread(target=pirTask, name='pir')
     t4 = threading.Thread(target=keyboardTask, name = "keyboard")
     t5 = threading.Thread(target=speakerTask, name = "speaker")
+    t6 = threading.Thread(target=oledTask, name = "oled")
 
     t1.daemon = True
     t2.daemon = True
     t3.daemon = True
     t4.daemon = True
     t5.daemon = True
+    t6.daemon = True
     
     t1.start()
     t2.start()
     t3.start()
     t4.start()
     t5.start()
+    t6.start()
 
 
     while True:
