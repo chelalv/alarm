@@ -1,12 +1,11 @@
 # encoding:utf-8
 # https://learn.adafruit.com/monochrome-oled-breakouts/python-usage-2
+# https://pypi.org/project/netifaces/
 import board
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_ssd1306
 import subprocess
 import time
-import log
-import temp, pir
 import netifaces
 import datetime
 import os
@@ -22,22 +21,12 @@ NOIP = "no IP"
 FONT_SIZE = 20
 IP_FONT_SIZE = 15
 OLED_SLEEP = 3
-DOWN_TIME = "20:00"
+DOWN_TIME = "20:25"
 
 def shutdown_task():
     print("即将于 {DOWN_TIME} 关机...")
     os.system("sudo shutdown -h now")
 
-def start_cron():
-    result = subprocess.run(["timedatectl", "status"], capture_output=True, text=True)
-    output = result.stdout
-    # 检查输出中是否包含特定输出"
-    if "System clock synchronized: yes" in output:
-        schedule.every().day.at(DOWN_TIME).do(shutdown_task)
-        return True
-    else:
-        return False
-    
 def getIP():
     try:
         # 优先无线网络(wlan0)
@@ -54,8 +43,17 @@ def getIP():
     except Exception as e:
         return NOIP
 
-def oledTask():
-    log.logger.info("---enter oledTask---")
+def start_cron():
+    result = subprocess.run(["timedatectl", "status"], capture_output=True, text=True)
+    output = result.stdout
+    # 检查输出中是否包含特定输出"
+    if "System clock synchronized: yes" in output:
+        schedule.every().day.at(DOWN_TIME).do(shutdown_task)
+        return True
+    else:
+        return False
+    
+while True:
     ip = getIP()
     # Use for I2C.
     i2c = board.I2C()
@@ -66,6 +64,8 @@ def oledTask():
     font_ip = ImageFont.truetype("DejaVuSans.ttf", size=IP_FONT_SIZE)
     font = ImageFont.truetype("DejaVuSans.ttf", size=FONT_SIZE)
     height = font_ip.getbbox(ip)[3]
+    cnt = 0
+    ntp = "ntp no"
     cron_started = False
     while True:
         schedule.run_pending()
@@ -79,21 +79,18 @@ def oledTask():
         elif(cron_started == False):
             if(start_cron() == True):
                 cron_started = True
+                ntp = "ntp yes"
         draw.text((0, 0), ip,  font=font_ip, fill=255)
+        #draw.text((0, height+2), str(cnt), font=font, fill=255)
+        #height2 = font.getbbox(str(cnt))[3]
+        draw.text((0, height+2), ntp, font=font, fill=255)
+        height2 = font.getbbox(ntp)[3]
         current_time = datetime.datetime.now()
         formatted_time = current_time.strftime("%H:%M:%S")
-        height2 = font.getbbox("test")[3]
         draw.text((0, height+2+height2), formatted_time, font=font, fill=255)
-        if(temp.flame_detected == True):
-            if(pir.person_internal == True):
-                draw.text((0, height+2), "man and fire", font=font, fill=255)
-            else:
-                draw.text((0, height+2), "only fire", font=font, fill=255)
-        else:
-            if(pir.person_internal == True):
-                draw.text((0, height+2), "only man", font=font, fill=255)
-            else:
-                draw.text((0, height+2), "normal", font=font, fill=255)
+        cnt += 1
+        if(cnt == 100):
+            cnt = 0
         # Display image
         oled.image(image)
         oled.show()

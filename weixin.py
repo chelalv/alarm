@@ -8,7 +8,7 @@ weixinFlag = False
 sentFlag = False
 start_time = 0
 
-token = 'abcd' #在pushplus网站中可以找到
+token = 'a1c54e811f1e4ce1b187921fc69cc388' #在pushplus网站中可以找到
 title= '报警' #改成你要的标题内容
 
 #define
@@ -22,16 +22,16 @@ HEARTBEATTIME = 60 * 60
 
 def sendMsg():
     global sentFlag, start_time
+    #不管发送报警信息有没有成功，cnt都加1
+    speaker.cnt += 1
     content = time.ctime() + ' 检测到高温并且人不在旁边 cnt ' + f"{speaker.cnt}"
     url = 'http://www.pushplus.plus/send?token='+token+'&title='+title+'&content='+content
     response = requests.get(url)
     #print(response.text)
-    if(response.status_code == 200):
-        sentFlag = True
-        start_time = time.perf_counter()
-        speaker.cnt += 1
-    else:
+    if '200' not in response.text:
         log.logger.error(f"发送消息不成功 {response.status_code}")
+    sentFlag = True
+    start_time = time.perf_counter()
 
 
 

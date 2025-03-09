@@ -20,9 +20,7 @@ def playmusic():
     url = 'http://www.pushplus.plus/send?token='+token+'&title='+title+'&content='+content
     response = requests.get(url)
     #print(response.text)
-    if(response.status_code == 200):
-        pass
-    else:
+    if '200' not in response.text:
         log.logger.error(f"发送声光报警消息不成功 {response.status_code}")
 
     

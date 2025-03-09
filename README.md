@@ -4,7 +4,7 @@ dtoverlay=uart4
 3. 树莓派4B 3.3v引脚 单个GPIO建议3mA，最大16mA，所有GPIO总共不能超过272mA
    树莓派4B 5v引脚是适配器输出，和USB一起的，建议使用电流不要超过1.5A。
 4. 引脚
-雷达：  VCC3.3 外接电源
+雷达：  VCC5    PIN2
         GND    PIN9
         OT2    PIN13(GPIO27)
 每个距离门0.75m 
@@ -39,6 +39,22 @@ blink: 检测到高温
 2025-02-19：
 RGB灯很耗电，购买OLED I2C通信，平均电流10mA。
 https://learn.adafruit.com/monochrome-oled-breakouts
+
+2025-02-25:
+增加IP显示
+ pip install netifaces --break-system-packages
+
+2025-02-25:
+树莓派重启后哦时间会记住上一次的时间，一直到和网络时间同步
+等到同步结束，才开启关机命令
+去掉rc.local关机，在代码里定时关机
+
+查看log:journalctl -u wpa_supplicant.service, wifi经常会断，
+sudo iwlist wlan0 scan | grep -E "SSID|Quality" Quality是-70dbm
+购买一个旧的路由器加在原来的路由器上，新建一个ssid中不能有下划线
+
+2025-3-9
+购买5v购电的ld2402G，和热成像分享PIN2 5v输出
 
 
 
