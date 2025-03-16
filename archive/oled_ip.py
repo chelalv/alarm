@@ -18,7 +18,7 @@ MAN_MODE = "only man"
 MANDF_MODE = "man and fire"
 FIRE_MODE = "only fire"
 NOIP = "no IP"
-FONT_SIZE = 20
+FONT_SIZE = 15
 IP_FONT_SIZE = 15
 OLED_SLEEP = 3
 DOWN_TIME = "20:25"
@@ -28,20 +28,22 @@ def shutdown_task():
     os.system("sudo shutdown -h now")
 
 def getIP():
+    ip = [NOIP,NOIP]
     try:
-        # 优先无线网络(wlan0)
-        interfaces = 'wlan0'
-        addrs = netifaces.ifaddresses(interfaces)
-        if netifaces.AF_INET in addrs:
-            for addr_info in addrs[netifaces.AF_INET]:
-                ip = addr_info['addr']
-                if not ip.startswith('127.'):
-                    return ip
-                else:
-                    return NOIP
-        return NOIP
+        interfaces = ['wlan0','eth0']
+        addrs = netifaces.ifaddresses(interfaces[0])
+        ipv4_address = addrs.get(netifaces.AF_INET)
+        if ipv4_address:
+            # ipv4_address is a list of dictionaries, typically containing one element
+            ip[0] = ipv4_address[0]['addr']
+        addrs = netifaces.ifaddresses(interfaces[1])
+        ipv4_address = addrs.get(netifaces.AF_INET)
+        if ipv4_address:
+            # ipv4_address is a list of dictionaries, typically containing one element
+            ip[1] = ipv4_address[0]['addr']
+        return ip
     except Exception as e:
-        return NOIP
+        return ip
 
 def start_cron():
     result = subprocess.run(["timedatectl", "status"], capture_output=True, text=True)
@@ -61,12 +63,8 @@ while True:
     # Clear display.
     oled.fill(0)
     oled.show()
-    font_ip = ImageFont.truetype("DejaVuSans.ttf", size=IP_FONT_SIZE)
     font = ImageFont.truetype("DejaVuSans.ttf", size=FONT_SIZE)
-    height = font_ip.getbbox(ip)[3]
-    cnt = 0
-    ntp = "ntp no"
-    cron_started = False
+    height = font.getbbox(NOIP)[3]
     while True:
         schedule.run_pending()
         # Create blank image for drawing.
@@ -74,23 +72,13 @@ while True:
         image = Image.new('1', (oled.width, oled.height))
         # Get drawing object to draw on image.
         draw = ImageDraw.Draw(image)
-        if(ip == NOIP):
+        if(ip[0] == NOIP and ip[1] == NOIP):
             ip = getIP()
-        elif(cron_started == False):
-            if(start_cron() == True):
-                cron_started = True
-                ntp = "ntp yes"
-        draw.text((0, 0), ip,  font=font_ip, fill=255)
-        #draw.text((0, height+2), str(cnt), font=font, fill=255)
-        #height2 = font.getbbox(str(cnt))[3]
-        draw.text((0, height+2), ntp, font=font, fill=255)
-        height2 = font.getbbox(ntp)[3]
+        draw.text((0, 0), ip[0],  font=font, fill=255)
+        draw.text((0, height), ip[1],  font=font, fill=255)
         current_time = datetime.datetime.now()
         formatted_time = current_time.strftime("%H:%M:%S")
-        draw.text((0, height+2+height2), formatted_time, font=font, fill=255)
-        cnt += 1
-        if(cnt == 100):
-            cnt = 0
+        draw.text((0, height*2+2), formatted_time, font=font, fill=255)
         # Display image
         oled.image(image)
         oled.show()
