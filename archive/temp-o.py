@@ -1,4 +1,5 @@
 # encoding:utf-8
+# 使用微雪传感器i2c接口的源码libmlx90640，不是测试代码，测试代码是temptest.py 
 from ctypes import *
 import time
 import log

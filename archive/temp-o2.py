@@ -1,4 +1,5 @@
 # encoding:utf-8
+# 使用自己写的libsensor库。
 from ctypes import *
 import time
 import log

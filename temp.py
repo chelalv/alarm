@@ -9,18 +9,17 @@ HEADER = 0x5A
 POINT_NUM = 768
 
 flame_detected = False
+avg_temp = 0
 
 #define
 #温度检测每TEMPSLEEP秒一次
-TEMPSLEEP = 30 #秒
-#COOK_TIME秒一直检测到火焰就认为在做饭了
-COOK_TIME = 60 #秒
+TEMPSLEEP = 3 #秒
 templist = [0, 0, 0, 0, 0]
 
 
 def tempTask():
     log.logger.info("---enter tempTask---")
-    global flame_detected
+    global flame_detected, avg_temp
     ser = serial.Serial("/dev/ttyAMA4", 115200, timeout=3)
     ser.reset_input_buffer()
     ser.reset_output_buffer()
@@ -56,9 +55,12 @@ def tempTask():
                 print(f"crc is {hex(rsp[length-2])}{hex(rsp[length-1])}, The actual calculation result is {total_bytes[0:2]}")
             else:
                 ta = int.from_bytes(rsp[-4:-2], byteorder='little')
-                print(f"TA is {ta/100}")
+                total_temp = 0
+                
+                #print(f"TA is {ta/100}")
                 for i in range(0, POINT_NUM):
                     tp = int.from_bytes(rsp[i*2+4:i*2+6], byteorder='little')
+                    total_temp += tp
                     if(tp < 100*100):
                         templist[0] += 1
                     elif(tp >= 100*100 and tp < 200*100):
@@ -69,7 +71,8 @@ def tempTask():
                         templist[3] += 1
                     else:
                         templist[4] += 1
-                print(templist)
+                #print(templist)
+                avg_temp = (total_temp/POINT_NUM)/100
                 if(templist[1] >= 1 ):
                     #global flame_detected
                     flame_detected = True

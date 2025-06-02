@@ -14,10 +14,6 @@ import schedule
 
 WIDTH = 128
 HEIGHT = 64    
-NORMAL_MODE = "normal"
-MAN_MODE = "only man"
-MANDF_MODE = "man and fire"
-FIRE_MODE = "only fire"
 NOIP = "no IP"
 FONT_SIZE = 20
 IP_FONT_SIZE = 15
@@ -84,16 +80,21 @@ def oledTask():
         formatted_time = current_time.strftime("%H:%M:%S")
         height2 = font.getbbox("test")[3]
         draw.text((0, height+2+height2), formatted_time, font=font, fill=255)
+        tempe = round(temp.avg_temp,2)
         if(temp.flame_detected == True):
             if(pir.person_internal == True):
-                draw.text((0, height+2), "man and fire", font=font, fill=255)
+                text = f"m F t:{tempe}C"
+                draw.text((0, height+2), text, font=font, fill=255)
             else:
-                draw.text((0, height+2), "only fire", font=font, fill=255)
+                text = f"F t:{tempe}C"
+                draw.text((0, height+2), text, font=font, fill=255)
         else:
             if(pir.person_internal == True):
-                draw.text((0, height+2), "only man", font=font, fill=255)
+                text = f"m t:{tempe}C"
+                draw.text((0, height+2), text, font=font, fill=255)
             else:
-                draw.text((0, height+2), "normal", font=font, fill=255)
+                text = f"t:{tempe}C"
+                draw.text((0, height+2), text, font=font, fill=255)
         # Display image
         oled.image(image)
         oled.show()
