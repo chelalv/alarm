@@ -52,15 +52,27 @@ sudo vim /etc/systemd/system/alarm.service
 WorkingDirectory=/home/matt/projects/alarm/code
 ExecStart=python ./alarm.py
 Restart=always
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=alarm
 User=matt
-Group=matt
+Group=audio
 Environment=NODE_ENV=production
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse/"
 [Install]
 WantedBy=multi-user.target
-sudo systemctl enable  alarm
+
+sudo systemctl enable alarm.service
+还需要设置一下开机启动的默认target：
+matt@rpi4-2:~ $ systemctl get-default
+multi-user.target
+matt@rpi4-2:~ $ sudo systemctl set-default graphical.target
+Removed "/etc/systemd/system/default.target".
+Created symlink /etc/systemd/system/default.target → /lib/systemd/system/graphical.target.
+matt@rpi4-2:~ $ sudo reboot
+
+
 
 /etc/crontab 设置自动关机，每天晚上关机
 00 20   * * *   root    shutdown -h now

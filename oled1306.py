@@ -21,7 +21,7 @@ OLED_SLEEP = 3
 DOWN_TIME = "20:00"
 
 def shutdown_task():
-    print("即将于 {DOWN_TIME} 关机...")
+    print(f"即将于 {DOWN_TIME} 关机...")
     os.system("sudo shutdown -h now")
 
 def start_cron():
@@ -59,9 +59,10 @@ def oledTask():
     # Clear display.
     oled.fill(0)
     oled.show()
+    # IP地址很长，需要用小号字体，才能显示全
     font_ip = ImageFont.truetype("DejaVuSans.ttf", size=IP_FONT_SIZE)
     font = ImageFont.truetype("DejaVuSans.ttf", size=FONT_SIZE)
-    height = font_ip.getbbox(ip)[3]
+    height_ip = font.getbbox(ip)[3]
     cron_started = False
     while True:
         schedule.run_pending()
@@ -76,25 +77,19 @@ def oledTask():
             if(start_cron() == True):
                 cron_started = True
         draw.text((0, 0), ip,  font=font_ip, fill=255)
-        current_time = datetime.datetime.now()
-        formatted_time = current_time.strftime("%H:%M:%S")
-        height2 = font.getbbox("test")[3]
-        draw.text((0, height+2+height2), formatted_time, font=font, fill=255)
+        #current_time = datetime.datetime.now()
+        #formatted_time = current_time.strftime("%H:%M:%S")
         tempe = round(temp.avg_temp,2)
         if(temp.flame_detected == True):
-            if(pir.person_internal == True):
-                text = f"m F t:{tempe}C"
-                draw.text((0, height+2), text, font=font, fill=255)
-            else:
-                text = f"F t:{tempe}C"
-                draw.text((0, height+2), text, font=font, fill=255)
+            text = f"F t:{tempe}C"
+            draw.text((0, height_ip+2), text, font=font, fill=255)
         else:
-            if(pir.person_internal == True):
-                text = f"m t:{tempe}C"
-                draw.text((0, height+2), text, font=font, fill=255)
-            else:
-                text = f"t:{tempe}C"
-                draw.text((0, height+2), text, font=font, fill=255)
+            text = f"t:{tempe}C"
+            draw.text((0, height_ip+2), text, font=font, fill=255)
+        height_t = font.getbbox(text)[3]
+        if(pir.person_internal == True):
+            text = f"man"
+            draw.text((0, height_ip+2+height_t), text, font=font, fill=255)            
         # Display image
         oled.image(image)
         oled.show()

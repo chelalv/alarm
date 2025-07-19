@@ -64,5 +64,19 @@ sudo iwlist wlan0 scan | grep -E "SSID|Quality" Quality是-70dbm
 2025-6-2
 oled显示平均温度，这样就能实时看到温度传感器是否正常工作
 
+2025-7-13
+增加客厅一个树莓派加喇叭，防止厨房喇叭声音太小听不到
+设置树莓派固定ip，运行mqtt local broker，使用mqtt通信
+borker安装：
+sudo apt install mosquitto mosquitto-clients
+需修改/etc/mosquitto/mosquitto.conf添加：
+listener 1883 0.0.0.0
+
+on_connect函数没有被调用，必须调用 loop_start()（异步）或 loop_forever()（阻塞）以处理网络流量和回调。
+
+python schedule不成功，需要while循环schedule.run_pending()
+
+
+
 
 

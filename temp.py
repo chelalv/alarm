@@ -14,6 +14,7 @@ avg_temp = 0
 #define
 #温度检测每TEMPSLEEP秒一次
 TEMPSLEEP = 3 #秒
+logcnt = 60/TEMPSLEEP
 templist = [0, 0, 0, 0, 0]
 
 
@@ -32,7 +33,7 @@ def tempTask():
     print(f"emissivity data is {rsp_string}")
     cmd_get_data =b"\xA5\x35\x01\xDB"
     global templist
-
+    cnt = 0
     while True:
         ser.write(cmd_get_data)
         rsp = ser.read(LEN_DATA)
@@ -56,7 +57,6 @@ def tempTask():
             else:
                 ta = int.from_bytes(rsp[-4:-2], byteorder='little')
                 total_temp = 0
-                
                 #print(f"TA is {ta/100}")
                 for i in range(0, POINT_NUM):
                     tp = int.from_bytes(rsp[i*2+4:i*2+6], byteorder='little')
@@ -76,10 +76,19 @@ def tempTask():
                 if(templist[1] >= 1 ):
                     #global flame_detected
                     flame_detected = True
-                    print("flame detected")
-                    log.logger.info(templist)
+                    #print("flame detected")
+                    #log.logger.info(templist)
+                    if(cnt == logcnt):
+                        cnt = 0
+                        log.logger.info(f"{templist} {round(avg_temp,2)}")
+                        print("flame detected")
+                        print(f"{templist} {round(avg_temp,2)}")
                 else:
                     flame_detected = False
+                    if(cnt == logcnt):
+                        cnt = 0
+                        print(f"{templist} {round(avg_temp,2)}")
+        cnt += 1
         time.sleep(TEMPSLEEP)
        
 
