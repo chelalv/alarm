@@ -74,7 +74,21 @@ listener 1883 0.0.0.0
 
 on_connect函数没有被调用，必须调用 loop_start()（异步）或 loop_forever()（阻塞）以处理网络流量和回调。
 
+pip install schedule
 python schedule不成功，需要while循环schedule.run_pending()
+
+2025-8-16：
+厨房开机，客厅关机，mqtt还是会收到
+Received `pub power_on` from `alarm/code`
+pub is on
+厨房关机，客厅开机，mqtt会收到
+Connected with result code Success
+Received `pub power_on` from `alarm/code`
+pub is on
+这个是由clean_session=False, 导致的
+clean_session=False, 会导致在断开连接后，再次连接时，会收到之前的消息
+clean_session=True, 不会收到之前的消息
+增加打印retain={msg.retain}来查看消息是否是retain
 
 
 

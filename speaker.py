@@ -21,7 +21,7 @@ def on_connect(client, userdata, flags, rc, properties):
         print(f"Connected with code {rc}")
         client.subscribe("alarm/code", qos=1)
         # retain 为True 表示订阅者连接后会收到最近一次发布的消息
-        client.publish("alarm/code", "pub power_on", qos=1, retain=True)  # qos=1保证至少送达一次        
+        client.publish("alarm/code", "pub power_on", qos=1, retain=False)  # qos=1保证至少送达一次        
     else:
         print(f"Connection failed with code {rc}")
 
@@ -29,7 +29,7 @@ def on_disconnect(client, userdata, flags, rc, properties):
     print(f"Disconnected with code: {rc}")
 
 def on_message(client, userdata, msg):
-    print(f"Received `{msg.payload.decode()}` from `{msg.topic}`")
+    print(f"Received `{msg.payload.decode()}` from `{msg.topic}` retain={msg.retain}")
     code = msg.payload.decode()
     if("pub power_on" == code):
         print("pub is on")

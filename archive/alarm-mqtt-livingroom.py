@@ -6,6 +6,7 @@ import subprocess
 import schedule
 import netifaces
 import time
+import log
 
 MQTT_SLEEP = 10
 NOIP = "no IP"
@@ -29,48 +30,52 @@ def getIP():
         return NOIP
 
 def shutdown_task():
-    print(f"即将于 {DOWN_TIME} 关机...")
+    log.logger.info(f"即将于 {DOWN_TIME} 关机...")
     os.system("sudo shutdown -h now")
 
 def start_cron():
     result = subprocess.run(["timedatectl", "status"], capture_output=True, text=True)
     output = result.stdout
+    log.logger.info(output)
     # 检查输出中是否包含特定输出"
     if "System clock synchronized: yes" in output:
+        log.logger.info("time is synchronized")
         schedule.every().day.at(DOWN_TIME).do(shutdown_task)
         return True
     else:
+        log.logger.error("time is not synchronized")
+        #os.system("sudo timedatectl set-ntp true")
         return False
 
 def on_message(client, userdata, msg):
-    print(f"Received `{msg.payload.decode()}` from `{msg.topic}`")
+    log.logger.info(f"Received `{msg.payload.decode()}` from `{msg.topic}` retain={msg.retain}")
     code = msg.payload.decode()
     if("pub power_on" == code):
-        print("pub is on")
+        log.logger.info("pub is on")
     elif("sub power_on" == code):
-        print("sub is on")
+        log.logger.info("sub is on")
     elif("alarm" == code):
-        print("alarm")
+        log.logger.info("alarm")
         os.system("mplayer alarm.m4a &")
 
 
 def on_connect(client, userdata, flags, rc, properties):
-    print(f"Connected with result code {rc}")
+    log.logger.info(f"Connected with result code {rc}")
     # Subscribe, which need to put into on_connect
     # If reconnect after losing the connection with the broker, it will continue to subscribe to the raspberry/topic topic
     client.subscribe("alarm/code", qos=1)
     # retain 为True 表示订阅者连接后会收到最近一次发布的消息
-    client.publish("alarm/code", "sub power_on", qos=1, retain=True)  # qos=1保证至少送达一次
+    client.publish("alarm/code", "sub power_on", qos=1, retain=False)  # qos=1保证至少送达一次
 
+log.logger.info("---start alarm-mqtt-livingroom.py---")
 cron_started = False
 ip = getIP()
 while(ip == NOIP):
+    log.logger.info("no IP get, get again and sleep 10s")
     ip = getIP()
+    log.logger.info(ip)
     time.sleep(MQTT_SLEEP)
-if(start_cron() == True):
-    cron_started = True
-else:
-    print("cron start failed")
+log.logger.info("IP is " + ip)
 
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
@@ -81,6 +86,14 @@ client.connect("localhost", 1883)
 client.loop_start()
 
 while True:
-    schedule.run_pending()
-    print("当前时间: ", time.strftime("%H:%M:%S"))
+    if(cron_started == False):
+        if(start_cron() == True):
+            log.logger.info("cron started")
+            cron_started = True
+    else:
+        try:
+            schedule.run_pending()
+        except Exception as e:
+            log.logger.error(f"schedule run_pending error: {e}")
+    #log.logger.info("当前时间: ", time.strftime("%H:%M:%S"))
     time.sleep(MQTT_SLEEP)
