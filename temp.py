@@ -20,56 +20,22 @@ def tempTask():
     end_time = 0
     log.logger.info("---enter tempTask---\n")
     global templist
-    mlx90640 = cdll.LoadLibrary('./libmlx90640.so')
-    temp=(c_float*768)()
-    ptemp=pointer(temp)
+    mlx90640 = cdll.LoadLibrary('./libsensor.so')
+    #mlx90640.sensorInit(0,0)
     # 
     # mlx90640 will output 32*24 temperature array with chess mode
     #
     while True:
         #print(f" flame_detected in tempTask {flame_detected}")
-        mlx90640.get_mlx90640_temp(ptemp)
-        for i in range(len(temp)):
-            #if(i%16 == 0 and i!=0):
-            #    print("\n",end = '')
-            #print("%.2f " %(temp[i]),end = '')
-            if(temp[i] < 100):
-                templist[0] += 1
-            elif(temp[i] >= 100 and temp[i] < 200):
-                templist[1] += 1
-            elif(temp[i] >= 200 and temp[i] < 300):
-                templist[2] += 1
-            elif(temp[i] >= 300 and temp[i] < 400):
-                templist[3] += 1
-            else:
-                templist[4] += 1
-        #print("\ntotal is "+ str(len(temp)) + ", temp below 30 is " + str(temp30) + \
-        #      ", 30-100 is " + str(temp30_100) + ", over 100 is ", str(temp100) + ".\n")
+        templist[1] = mlx90640.getTemp(0, 0)
         print(templist)
-
         if(templist[1] >= 1 ):
-        #if(templist[1] >= 1 ):
-            #global flame_detected
             flame_detected = True
             print("flame detected")
             log.logger.info(templist)
-            #if(False == start_cook):
-            #    startCook = True
-            #    start_time = time.perf_counter()
-        #没有检测到高温，再统计高温持续了多久
+        #没有检测到高温
         else:
             flame_detected = False
-            """
-            if(True == start_cook):
-                start_cook = False
-                end_time = time.perf_counter()
-                run_time = end_time - start_time
-                if(run_time > COOK_TIME):
-                    log.logger.info("正在做饭")
-                    start_time = end_time = run_time = 0
-            """
-            
-
         #temp1 = temp2 = temp3 = 0
         templist = [0, 0, 0, 0, 0]
         

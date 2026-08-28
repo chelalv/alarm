@@ -24,10 +24,10 @@ def someone_near():
     global person_internal
     person = True
     person_internal = True
-    print("someone near {speaker.cnt}")
+    print(f"someone near, clear 已报警{speaker.cnt}")
     speaker.cnt = 0
     #只要检测到有人，就重新计时
-    #startTime = time.perf_counter()
+    startTime = 0
 
 def someone_left():
     global person_internal
@@ -53,6 +53,8 @@ def pirTask():
 
     if(pir.value == 1):
         person = True
+    else:
+        startTime = time.perf_counter()
     while True:
         if(False == person_internal and startTime != 0):
             endTime = time.perf_counter()

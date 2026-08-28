@@ -22,7 +22,7 @@ HEARTBEATTIME = 60 * 60
 
 def sendMsg():
     global sentFlag, start_time
-    content = time.ctime() + ' 检测到高温并且人不在旁边'
+    content = time.ctime() + ' 检测到高温并且人不在旁边 cnt ' + f"{speaker.cnt}"
     url = 'http://www.pushplus.plus/send?token='+token+'&title='+title+'&content='+content
     response = requests.get(url)
     #print(response.text)
