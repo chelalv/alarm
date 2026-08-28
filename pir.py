@@ -40,7 +40,7 @@ def someone_left():
 
 
 def pirTask():
-    log.logger.info("---enter pirTask---\n")
+    log.logger.info("---enter pirTask---")
     #使用的是11脚GPIO0
     #pir = DigitalInputDevice(pin = 17)
     #RPI4使用13脚GPIO 27

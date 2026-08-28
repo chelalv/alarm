@@ -22,22 +22,22 @@ HEARTBEATTIME = 60 * 60
 
 def sendMsg():
     global sentFlag, start_time
+    #不管发送报警信息有没有成功，cnt都加1
+    speaker.cnt += 1
     content = time.ctime() + ' 检测到高温并且人不在旁边 cnt ' + f"{speaker.cnt}"
     url = 'http://www.pushplus.plus/send?token='+token+'&title='+title+'&content='+content
     response = requests.get(url)
     #print(response.text)
-    if(response.status_code == 200):
-        sentFlag = True
-        start_time = time.perf_counter()
-        speaker.cnt += 1
-    else:
+    if '200' not in response.text:
         log.logger.error(f"发送消息不成功 {response.status_code}")
+    sentFlag = True
+    start_time = time.perf_counter()
 
 
 
 def weixinTask():
     global weixinFlag, start_time, sentFlag, sendTimer
-    log.logger.info("---enter weixinTask---\n")
+    log.logger.info("---enter weixinTask---")
     heartbeet = False
     cpu = CPUTemperature()
     while True:
@@ -58,6 +58,6 @@ def weixinTask():
         heartbeetStop = time.perf_counter()
         if(heartbeetStop - heartbeetStart > HEARTBEATTIME):
             temp = cpu.temperature
-            log.logger.info(f"heartbeat and temperature is {temp}")
+            log.logger.info(f"heartbeat and PC temperature is {temp}")
             heartbeet = False
         time.sleep(WEIXIN_SLEEP)
